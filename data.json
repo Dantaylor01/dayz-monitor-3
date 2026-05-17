@@ -1,0 +1,20 @@
+{
+  "data": {
+    "id": "4857562",
+    "type": "server",
+    "attributes": {
+      "name": "5486 | ASIA PACIFIC – SG",
+      "ip": "128.0.112.57",
+      "port": 11400,
+      "players": 0,
+      "maxPlayers": 60,
+      "rank": 0,
+      "status": "unknown",
+      "details": {
+        "time": null,
+        "timeAcceleration": 12
+      }
+    }
+  },
+  "fetched_at": "2024-01-01T00:00:00Z"
+}

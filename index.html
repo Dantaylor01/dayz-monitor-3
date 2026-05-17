@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DayZ Crime Clock — 5486 ASIA PACIFIC SG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080b0f;
+    --bg2: #0d1117;
+    --bg3: #111820;
+    --panel: #0f1823;
+    --border: #1e2d3d;
+    --accent: #00ff88;
+    --accent2: #ff4444;
+    --accent3: #ffaa00;
+    --text: #c8d8e8;
+    --muted: #4a6070;
+    --mono: 'Share Tech Mono', monospace;
+    --display: 'Bebas Neue', sans-serif;
+    --body: 'Sarabun', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,136,0.015) 2px, rgba(0,255,136,0.015) 4px),
+      repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,255,136,0.008) 2px, rgba(0,255,136,0.008) 4px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+
+  /* ─── HEADER ─── */
+  header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 24px;
+  }
+  .hdr-left {}
+  .hdr-title {
+    font-family: var(--display);
+    font-size: 42px; letter-spacing: 3px;
+    color: var(--accent);
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(0,255,136,0.3);
+  }
+  .hdr-sub { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; letter-spacing: 1px; }
+  .hdr-right { text-align: right; }
+  .server-id { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 6px; }
+  .live-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 11px;
+    padding: 4px 10px; border: 1px solid var(--accent);
+    color: var(--accent); letter-spacing: 1px;
+  }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: blink 1.2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* ─── PLAYER HERO BANNER ─── */
+  .player-banner {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.35);
+    padding: 18px 20px; border-radius: 14px; margin-bottom: 20px;
+    box-shadow: 0 0 40px rgba(0,255,136,0.1);
+  }
+  .player-banner-left {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .player-banner-label {
+    font-family: var(--mono); font-size: 12px; color: var(--accent);
+    letter-spacing: 1.8px; text-transform: uppercase;
+  }
+  .player-banner-count {
+    font-family: var(--display); font-size: 62px; line-height: 0.95;
+    color: #ffffff; text-shadow: 0 0 30px rgba(0,255,136,0.5);
+  }
+  .player-banner-max {
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+  }
+  .player-banner-right {
+    text-align: right; display: flex; flex-direction: column; gap: 4px;
+  }
+  .player-banner-status {
+    font-family: var(--mono); font-size: 11px; color: var(--text);
+    background: rgba(255,255,255,0.04); padding: 8px 12px; border-radius: 10px;
+  }
+
+  /* ─── METRIC CARDS ─── */
+  .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+  .mcard {
+    background: var(--panel); border: 1px solid var(--border);
+    padding: 14px 16px;
+  }
+  .mcard-label { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 6px; text-transform: uppercase; }
+  .mcard-val { font-family: var(--display); font-size: 34px; line-height: 1; }
+  .mcard-sub { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 4px; }
+  .val-green { color: var(--accent); text-shadow: 0 0 20px rgba(0,255,136,0.4); }
+  .val-red { color: var(--accent2); text-shadow: 0 0 20px rgba(255,68,68,0.4); }
+  .val-amber { color: var(--accent3); text-shadow: 0 0 20px rgba(255,170,0,0.4); }
+  .val-white { color: var(--text); }
+
+  /* ─── MAIN GRID ─── */
+  .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+  /* ─── PANEL ─── */
+  .panel {
+    background: var(--panel); border: 1px solid var(--border); padding: 16px;
+  }
+  .panel-title {
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+    letter-spacing: 2px; text-transform: uppercase;
+    border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .panel-title::before { content: '//'; color: var(--accent); }
+
+  /* ─── CLOCK FACE ─── */
+  .clock-wrap { display: flex; justify-content: center; align-items: center; padding: 8px 0; }
+  #clockCanvas { display: block; }
+
+  /* ─── HOURLY BAR ─── */
+  .bar-chart { display: flex; align-items: flex-end; gap: 3px; height: 100px; padding-bottom: 20px; position: relative; }
+  .bar-chart::after {
+    content: '';
+    position: absolute; bottom: 20px; left: 0; right: 0;
+    height: 1px; background: var(--border);
+  }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+  .bar-rect {
+    width: 100%; min-height: 2px;
+    transition: height 0.6s ease;
+    position: relative;
+  }
+  .bar-rect:hover::after {
+    content: attr(data-tip);
+    position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+    background: var(--bg2); border: 1px solid var(--border);
+    font-family: var(--mono); font-size: 10px; color: var(--text);
+    padding: 3px 6px; white-space: nowrap; z-index: 10; pointer-events: none;
+  }
+  .bar-label { font-family: var(--mono); font-size: 9px; color: var(--muted); }
+  .bar-safe { background: var(--accent); }
+  .bar-warn { background: var(--accent3); }
+  .bar-danger { background: var(--accent2); }
+
+  /* ─── RECOMMENDATION ZONE ─── */
+  .zone-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px; }
+  .zone-card { border: 1px solid; padding: 14px; }
+  .zone-card.safe { border-color: var(--accent); background: rgba(0,255,136,0.05); }
+  .zone-card.warn { border-color: var(--accent3); background: rgba(255,170,0,0.05); }
+  .zone-card.danger { border-color: var(--accent2); background: rgba(255,68,68,0.05); }
+  .zone-label { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; margin-bottom: 6px; }
+  .safe .zone-label { color: var(--accent); }
+  .warn .zone-label { color: var(--accent3); }
+  .danger .zone-label { color: var(--accent2); }
+  .zone-time { font-family: var(--display); font-size: 26px; line-height: 1; margin-bottom: 6px; }
+  .safe .zone-time { color: var(--accent); }
+  .warn .zone-time { color: var(--accent3); }
+  .danger .zone-time { color: var(--accent2); }
+  .zone-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* ─── HISTORY ─── */
+  .history-chart { display: flex; align-items: flex-end; gap: 4px; height: 80px; }
+  .hist-col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 3px; height: 100%; }
+  .hist-bar { width: 100%; background: rgba(0,255,136,0.25); border-top: 1px solid var(--accent); min-height: 2px; }
+  .hist-label { font-family: var(--mono); font-size: 9px; color: var(--muted); }
+
+  /* ─── TIPS ─── */
+  .tips-panel { background: var(--panel); border: 1px solid var(--border); padding: 16px; margin-bottom: 16px; }
+  .tip-row {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 8px 0; border-bottom: 1px solid rgba(30,45,61,0.5);
+    font-size: 13px; line-height: 1.5;
+  }
+  .tip-row:last-child { border-bottom: none; }
+  .tip-icon { font-family: var(--mono); font-size: 11px; flex-shrink: 0; margin-top: 2px; }
+  .tip-icon.g { color: var(--accent); }
+  .tip-icon.a { color: var(--accent3); }
+  .tip-icon.r { color: var(--accent2); }
+
+  /* ─── STATUS BAR ─── */
+  .status-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+    border-top: 1px solid var(--border); padding-top: 12px; margin-top: 8px;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .status-item { display: flex; align-items: center; gap: 6px; }
+
+  /* ─── ERROR / LOADING ─── */
+  .fetch-state {
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    text-align: center; padding: 8px;
+  }
+  .err { color: var(--accent2); }
+  .ok { color: var(--accent); }
+
+  /* ─── CAPACITY BAR ─── */
+  .cap-bar-wrap { margin-top: 10px; }
+  .cap-bar-track {
+    width: 100%; height: 8px; background: var(--bg3);
+    border: 1px solid var(--border); overflow: hidden;
+  }
+  .cap-bar-fill { height: 100%; transition: width 0.8s ease; }
+  .cap-label { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 4px; display: flex; justify-content: space-between; }
+
+  /* ─── GAME TIME ─── */
+  .gametime-bar {
+    display: flex; align-items: stretch; gap: 12px;
+    background: var(--panel); border: 1px solid var(--border);
+    padding: 14px 16px; margin-bottom: 16px;
+  }
+  .gt-clock {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-width: 120px; border-right: 1px solid var(--border); padding-right: 16px;
+  }
+  .gt-label { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 4px; }
+  .gt-time { font-family: var(--display); font-size: 38px; line-height: 1; }
+  .gt-phase { font-family: var(--mono); font-size: 11px; margin-top: 4px; }
+  .gt-right { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+  .gt-cycle-track {
+    position: relative; height: 20px;
+    background: linear-gradient(to right,
+      #0a0a1a 0%, #1a1a3a 8%, #2a3a6a 15%,
+      #f0a020 22%, #ffe080 30%, #87ceeb 45%,
+      #4488cc 55%, #2255aa 65%,
+      #e08020 72%, #f0a020 78%,
+      #1a1a3a 85%, #0a0a1a 100%
+    );
+    border-radius: 2px; overflow: visible; border: 1px solid var(--border);
+  }
+  .gt-needle {
+    position: absolute; top: -4px; width: 2px; height: 28px;
+    background: #fff; box-shadow: 0 0 6px #fff;
+    transform: translateX(-50%); transition: left 1s linear;
+  }
+  .gt-markers { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 9px; color: var(--muted); margin-top: 2px; padding: 0 2px; }
+  .gt-status-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .gt-stat { font-family: var(--mono); font-size: 11px; }
+  .gt-stat span { color: var(--accent); }
+
+  /* ─── ALERT TOAST ─── */
+  #alert-container {
+    position: fixed; top: 16px; right: 16px;
+    display: flex; flex-direction: column; gap: 8px;
+    z-index: 9999; max-width: 300px;
+  }
+  .toast {
+    background: var(--panel); border: 1px solid var(--border);
+    padding: 10px 14px; font-family: var(--mono); font-size: 12px;
+    animation: slideIn 0.3s ease, fadeOut 0.4s ease 4.6s forwards;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  .toast.join { border-color: var(--accent); }
+  .toast.leave { border-color: var(--accent2); }
+  .toast.zone-change { border-color: var(--accent3); }
+  .toast-icon { font-size: 16px; flex-shrink: 0; }
+  .toast-body { flex: 1; }
+  .toast-title { font-weight: bold; margin-bottom: 2px; }
+  .toast.join .toast-title { color: var(--accent); }
+  .toast.leave .toast-title { color: var(--accent2); }
+  .toast.zone-change .toast-title { color: var(--accent3); }
+  .toast-msg { font-size: 10px; color: var(--muted); }
+  @keyframes slideIn { from { opacity:0; transform: translateX(30px); } to { opacity:1; transform: translateX(0); } }
+  @keyframes fadeOut { from { opacity:1; } to { opacity:0; pointer-events:none; } }
+
+  /* ─── ALERT LOG ─── */
+  .alert-log {
+    background: var(--panel); border: 1px solid var(--border);
+    padding: 16px; margin-bottom: 16px;
+  }
+  .log-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .log-entries { max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+  .log-entries::-webkit-scrollbar { width: 4px; }
+  .log-entries::-webkit-scrollbar-track { background: var(--bg3); }
+  .log-entries::-webkit-scrollbar-thumb { background: var(--border); }
+  .log-entry { display: flex; gap: 10px; font-family: var(--mono); font-size: 11px; padding: 4px 6px; }
+  .log-entry:nth-child(even) { background: rgba(255,255,255,0.02); }
+  .log-ts { color: var(--muted); flex-shrink: 0; }
+  .log-msg { flex: 1; }
+  .log-j { color: var(--accent); }
+  .log-l { color: var(--accent2); }
+  .log-z { color: var(--accent3); }
+  .log-empty { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: center; padding: 20px; }
+
+  .sound-toggle {
+    font-family: var(--mono); font-size: 10px;
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); padding: 3px 8px; cursor: pointer;
+    letter-spacing: 1px;
+  }
+  .sound-toggle.on { border-color: var(--accent); color: var(--accent); }
+  .sound-toggle:hover { color: var(--text); }
+
+  @media (max-width: 600px) {
+    .metrics { grid-template-columns: repeat(2,1fr); }
+    .main-grid { grid-template-columns: 1fr; }
+    .zone-grid { grid-template-columns: 1fr; }
+    .hdr-title { font-size: 30px; }
+    .gametime-bar { flex-direction: column; }
+    .gt-clock { border-right: none; border-bottom: 1px solid var(--border); padding-right: 0; padding-bottom: 12px; }
+  }
+</style>
+</head>
+<body>
+<div id="alert-container"></div>
+<div class="wrap">
+
+  <header>
+    <div class="hdr-left">
+      <div class="hdr-title">CRIME CLOCK</div>
+      <div class="hdr-sub">DAYZ SERVER ACTIVITY ANALYZER — FARMING INTELLIGENCE SYSTEM</div>
+    </div>
+    <div class="hdr-right">
+      <div class="server-id">SERVER ID: 4857562 · 5486 | ASIA PACIFIC – SG</div>
+      <div class="live-badge"><span class="live-dot"></span>LIVE DATA</div>
+    </div>
+  </header>
+
+  <div class="player-banner">
+    <div class="player-banner-left">
+      <div class="player-banner-label">ONLINE PLAYERS</div>
+      <div class="player-banner-count" id="m-current">—</div>
+      <div class="player-banner-max" id="m-max">/ — max</div>
+    </div>
+    <div class="player-banner-right">
+      <div class="player-banner-status">LIVE SERVER LOAD</div>
+      <div class="player-banner-status">UPDATES EVERY 30s</div>
+    </div>
+  </div>
+
+  <div class="gametime-bar">
+    <div class="gt-clock">
+      <div class="gt-label">IN-GAME TIME</div>
+      <div class="gt-time" id="gt-display">--:--</div>
+      <div class="gt-phase" id="gt-phase">—</div>
+    </div>
+    <div class="gt-right">
+      <div style="position:relative;">
+        <div class="gt-cycle-track">
+          <div class="gt-needle" id="gt-needle" style="left:0%"></div>
+        </div>
+        <div class="gt-markers">
+          <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span>
+        </div>
+      </div>
+      <div class="gt-status-row">
+        <div class="gt-stat">เวลา Real: <span id="gt-real">—</span></div>
+        <div class="gt-stat">Accel: <span id="gt-accel">—</span>x</div>
+        <div class="gt-stat" id="gt-sunrise-set">Sunrise: 05:30 · Sunset: 20:30</div>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:6px;" id="gt-source">รอข้อมูล API...</div>
+    </div>
+  </div>
+
+  <div class="metrics">
+    <div class="mcard">
+      <div class="mcard-label">SERVER STATUS</div>
+      <div class="mcard-val" id="m-status" style="font-size:22px; margin-top:4px">FETCHING</div>
+      <div class="mcard-sub" id="m-rank">rank: —</div>
+    </div>
+    <div class="mcard">
+      <div class="mcard-label">DANGER LEVEL</div>
+      <div class="mcard-val val-amber" id="m-danger">—</div>
+      <div class="mcard-sub" id="m-danger-sub">analyzing...</div>
+    </div>
+    <div class="mcard">
+      <div class="mcard-label">FARM WINDOW</div>
+      <div class="mcard-val val-green" id="m-farm">04–08h</div>
+      <div class="mcard-sub">ช่วงปลอดภัยสุด</div>
+    </div>
+  </div>
+
+  <!-- ALERT LOG -->
+  <div class="alert-log">
+    <div class="log-header">
+      <div class="panel-title" style="margin:0;border:none;padding:0;">PLAYER MOVEMENT LOG</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="sound-toggle on" id="sound-btn" onclick="toggleSound()">🔊 SOUND ON</button>
+        <button class="sound-toggle" onclick="testDiscordWebhook()" style="border-color:var(--accent);">🟣 TEST DISCORD</button>
+        <button class="sound-toggle" onclick="document.getElementById('log-entries').innerHTML='<div class=\'log-empty\'>— cleared —</div>'" style="border-color:var(--muted)">CLEAR</button>
+      </div>
+    </div>
+    <div class="log-entries" id="log-entries">
+      <div class="log-empty">— รอข้อมูล... alert จะแสดงเมื่อมีการเปลี่ยนแปลง —</div>
+    </div>
+  </div>
+
+  <div id="fetch-status" class="fetch-state">⟳ กำลังดึงข้อมูลจาก BattleMetrics API...</div>
+
+  <div class="cap-bar-wrap" style="margin-bottom:16px">
+    <div class="cap-bar-track">
+      <div class="cap-bar-fill" id="cap-fill" style="width:0%; background: var(--accent);"></div>
+    </div>
+    <div class="cap-label">
+      <span id="cap-left">0 / 60 players online</span>
+      <span id="cap-pct">0%</span>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div class="panel">
+      <div class="panel-title">CRIME CLOCK — นาฬิกา 24H</div>
+      <div class="clock-wrap">
+        <canvas id="clockCanvas" width="220" height="220"></canvas>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">HOURLY PLAYER PATTERN (SGT)</div>
+      <div class="bar-chart" id="hourly-bars"></div>
+      <div style="display:flex; gap:12px; margin-top:8px; flex-wrap:wrap;">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--accent)">■ ปลอดภัย &lt;15</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--accent3)">■ ระวัง 15–35</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--accent2)">■ อันตราย &gt;35</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="zone-grid">
+    <div class="zone-card safe">
+      <div class="zone-label">▶ SAFE ZONE — ฟาร์มได้เลย</div>
+      <div class="zone-time">04:00–08:00</div>
+      <div class="zone-desc">ผู้เล่นน้อยสุด 4–10 คน<br>เหมาะฟาร์ม military loot<br>NWAF, Tisy, Military Base</div>
+    </div>
+    <div class="zone-card warn">
+      <div class="zone-label">▶ CAUTION — ระวังด้วย</div>
+      <div class="zone-time">09:00–17:00</div>
+      <div class="zone-desc">ผู้เล่นปานกลาง 15–30 คน<br>ฟาร์ม coast/town ได้<br>หลีก hotspot ใหญ่</div>
+    </div>
+    <div class="zone-card danger">
+      <div class="zone-label">▶ DANGER — หลีกเลี่ยง</div>
+      <div class="zone-time">19:00–23:00</div>
+      <div class="zone-desc">Peak PvP เกือบเต็ม 40–58<br>ความเสี่ยงสูงมาก<br>ใช้ stealth เท่านั้น</div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-bottom:16px">
+    <div class="panel-title">7-DAY PLAYER HISTORY (ประมาณการ APAC pattern)</div>
+    <div class="history-chart" id="hist-chart"></div>
+  </div>
+
+  <div class="tips-panel">
+    <div class="panel-title">TACTICAL FARMING INTELLIGENCE</div>
+    <div class="tip-row">
+      <span class="tip-icon g">[✓]</span>
+      <span>เซิร์ฟ Singapore (SGT = UTC+8) ตรงกับเวลาไทย ไม่ต้องปรับ timezone — ดูเวลาไทยได้เลย</span>
+    </div>
+    <div class="tip-row">
+      <span class="tip-icon g">[✓]</span>
+      <span>04:00–07:00 น. = Golden Window ผู้เล่นต่ำสุด ฟาร์ม tier-4/5 loot ได้อย่างปลอดภัย แนะนำเข้าทาง military zone</span>
+    </div>
+    <div class="tip-row">
+      <span class="tip-icon a">[!]</span>
+      <span>10:00–17:00 น. คนเริ่มเข้าเพิ่ม ให้ stash ของก่อนช่วงนี้ หรือเล่น coastal เท่านั้น อย่าเข้า military โดยไม่มีทีม</span>
+    </div>
+    <div class="tip-row">
+      <span class="tip-icon r">[✗]</span>
+      <span>19:00–23:00 น. PEAK TIME — เซิร์ฟเกือบเต็ม PvP สูงสุด หากต้องเล่น: ไม่ยิง, ไม่ใช้ไฟ, เดิน crouch ตลอด</span>
+    </div>
+    <div class="tip-row">
+      <span class="tip-icon a">[!]</span>
+      <span>วันเสาร์–อาทิตย์ผู้เล่นเพิ่ม ~30% เลื่อนเวลาฟาร์มเร็วขึ้น 1–2 ชั่วโมงจากปกติ</span>
+    </div>
+    <div class="tip-row">
+      <span class="tip-icon g">[✓]</span>
+      <span>ดูสถานะ live: <a href="https://www.battlemetrics.com/servers/dayz/4857562" target="_blank" style="color:var(--accent); text-decoration:none;">battlemetrics.com/servers/dayz/4857562</a></span>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <span class="status-item">⬡ BATTLEMETRICS API · PUBLIC ENDPOINT</span>
+    <span class="status-item" id="s-time">LAST UPDATE: —</span>
+    <span class="status-item" id="s-server">SERVER: 128.0.112.57:11400</span>
+    <span class="status-item">REGION: ASIA PACIFIC · SG</span>
+  </div>
+
+</div>
+
+<script>
+/* ── SOUND ENGINE (Web Audio API) ── */
+let soundEnabled = true;
+let audioCtx = null;
+
+function getAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    const resumeAudio = () => {
+      audioCtx.resume().catch(() => {});
+      window.removeEventListener('pointerdown', resumeAudio);
+      window.removeEventListener('keydown', resumeAudio);
+    };
+    window.addEventListener('pointerdown', resumeAudio, { once: true });
+    window.addEventListener('keydown', resumeAudio, { once: true });
+  }
+  return audioCtx;
+}
+
+function playJoinSound() {
+  if (!soundEnabled) return;
+  try {
+    const ctx = getAudio();
+    const t = ctx.currentTime;
+    [440, 550, 660].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0, t + i*0.08);
+      gain.gain.linearRampToValueAtTime(0.15, t + i*0.08 + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + i*0.08 + 0.25);
+      osc.start(t + i*0.08);
+      osc.stop(t + i*0.08 + 0.25);
+    });
+  } catch(e) {}
+}
+
+function playLeaveSound() {
+  if (!soundEnabled) return;
+  try {
+    const ctx = getAudio();
+    const t = ctx.currentTime;
+    [440, 330, 220].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0, t + i*0.1);
+      gain.gain.linearRampToValueAtTime(0.12, t + i*0.1 + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + i*0.1 + 0.28);
+      osc.start(t + i*0.1);
+      osc.stop(t + i*0.1 + 0.28);
+    });
+  } catch(e) {}
+}
+
+function playZoneSound() {
+  if (!soundEnabled) return;
+  try {
+    const ctx = getAudio();
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(880, t);
+    osc.frequency.linearRampToValueAtTime(440, t + 0.3);
+    gain.gain.setValueAtTime(0.08, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+    osc.start(t); osc.stop(t + 0.4);
+  } catch(e) {}
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  const btn = document.getElementById('sound-btn');
+  btn.textContent = soundEnabled ? '🔊 SOUND ON' : '🔇 SOUND OFF';
+  btn.className = 'sound-toggle ' + (soundEnabled ? 'on' : '');
+  if (soundEnabled && audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume().catch(() => {});
+  }
+}
+
+/* ── TOAST ALERT ── */
+function showToast(type, title, msg) {
+  const container = document.getElementById('alert-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  const icons = { join: '▲', leave: '▼', 'zone-change': '⚠' };
+  toast.innerHTML = `<div class="toast-icon">${icons[type]||'●'}</div>
+    <div class="toast-body"><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>`;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 5200);
+}
+
+const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1505231868432355390/0sV_ZfBpE7RAvHcr9LKmWYJ6opwUnexWHySKqBul_lN7Hb7lZHL5Gf252uPfx2npMK3G'; // วาง Discord webhook URL ที่นี่
+const DISCORD_USERNAME = 'DayZ player monitor Bot';
+const DISCORD_AVATAR_URL = '';
+
+async function sendDiscordNotification(title, msg) {
+  if (!DISCORD_WEBHOOK_URL) return;
+  const payload = {
+    username: DISCORD_USERNAME,
+    avatar_url: DISCORD_AVATAR_URL || undefined,
+    content: `**${title}**\n${msg}`
+  };
+  try {
+    await fetch(DISCORD_WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch (err) {
+    console.warn('Discord webhook failed:', err);
+  }
+}
+
+function testDiscordWebhook() {
+  const title = 'DISCORD WEBHOOK TEST';
+  const msg = 'ทดสอบส่งข้อความจาก DayZ Crime Clock. หาก URL ถูกต้อง ข้อความนี้จะไปที่ Discord channel.';
+  if (!DISCORD_WEBHOOK_URL) {
+    showToast('zone-change', title, 'กรุณากำหนด DISCORD_WEBHOOK_URL ในโค้ดก่อน');
+    return;
+  }
+  showToast('join', title, 'กำลังส่งข้อความทดสอบไปยัง Discord...');
+  sendDiscordNotification(title, msg);
+}
+
+/* ── LOG ENTRY ── */
+function addLog(type, msg) {
+  const log = document.getElementById('log-entries');
+  const empty = log.querySelector('.log-empty');
+  if (empty) empty.remove();
+  const now = new Date();
+  const ts = String(now.getHours()).padStart(2,'0') + ':' +
+             String(now.getMinutes()).padStart(2,'0') + ':' +
+             String(now.getSeconds()).padStart(2,'0');
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  const cls = type === 'join' ? 'log-j' : type === 'leave' ? 'log-l' : 'log-z';
+  const prefix = type === 'join' ? '▲ JOIN ' : type === 'leave' ? '▼ LEAVE' : '⚠ ZONE ';
+  entry.innerHTML = `<span class="log-ts">${ts}</span><span class="log-msg ${cls}">${prefix} · ${msg}</span>`;
+  log.insertBefore(entry, log.firstChild);
+  // keep max 50 entries
+  while (log.children.length > 50) log.removeChild(log.lastChild);
+}
+
+/* ── GAME TIME — ดึงจาก API field: data.attributes.details.time ── */
+// BattleMetrics ส่งค่า servertime เป็น string "HH:MM" หรือ "H:MM"
+// เราเก็บค่าล่าสุดไว้ใน lastKnownGameTime แล้วนับไปเองระหว่าง fetch
+// เมื่อ fetch ใหม่ได้ค่าจริงจะ sync ทับ
+
+const DAYZ_SUNRISE = 5.5;
+const DAYZ_SUNSET  = 20.5;
+
+let lastKnownGameTime = null;   // { h, m } จาก API
+let lastKnownFetchAt  = null;   // Date object ตอนที่ fetch ได้
+let lastKnownAccel    = 1;      // timeAcceleration ถ้า API ให้มา (default 1 = real-time)
+
+function parseServerTime(raw) {
+  // raw อาจเป็น "14:32" หรือ "14:32:00" หรือ number (seconds since midnight)
+  if (typeof raw === 'number') {
+    return { h: Math.floor(raw / 3600) % 24, m: Math.floor((raw % 3600) / 60) };
+  }
+  if (typeof raw === 'string') {
+    const parts = raw.split(':');
+    return { h: parseInt(parts[0], 10) % 24, m: parseInt(parts[1] || '0', 10) };
+  }
+  return null;
+}
+
+function updateGameTime() {
+  const now = new Date();
+  const sgt = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Singapore' }));
+
+  let gh, gm, sourceLabel;
+
+  if (lastKnownGameTime && lastKnownFetchAt) {
+    // คำนวณเวลาที่ผ่านไปจาก fetch ครั้งล่าสุด (มิลลิวินาที → นาที)
+    const elapsedRealMs = now - lastKnownFetchAt;
+    const elapsedGameMin = (elapsedRealMs / 60000) * lastKnownAccel;
+    const totalGameMin = (lastKnownGameTime.h * 60 + lastKnownGameTime.m + elapsedGameMin) % (24 * 60);
+    gh = Math.floor(totalGameMin / 60);
+    gm = Math.floor(totalGameMin % 60);
+    sourceLabel = '● LIVE (API + interpolated)';
+  } else {
+    // ยังไม่มีข้อมูล API — แสดง --:--
+    document.getElementById('gt-display').textContent = '--:--';
+    document.getElementById('gt-phase').textContent = 'รอ API...';
+    document.getElementById('gt-real').textContent = '—';
+    return;
+  }
+
+  const ghDec = gh + gm / 60;
+  const pct = (ghDec / 24) * 100;
+
+  let phase, phaseColor;
+  if (ghDec < 4)                    { phase = '🌑 กลางคืนลึก';  phaseColor = '#4455aa'; }
+  else if (ghDec < DAYZ_SUNRISE)    { phase = '🌒 รุ่งอรุณ';    phaseColor = '#cc8833'; }
+  else if (ghDec < 9)               { phase = '🌅 เช้าตรู่';    phaseColor = '#ffaa44'; }
+  else if (ghDec < 14)              { phase = '☀️ กลางวัน';     phaseColor = '#ffe080'; }
+  else if (ghDec < 18)              { phase = '🌤 บ่าย';         phaseColor = '#88ccff'; }
+  else if (ghDec < DAYZ_SUNSET)     { phase = '🌆 เย็น';         phaseColor = '#ff8844'; }
+  else if (ghDec < 22)              { phase = '🌇 พลบค่ำ';      phaseColor = '#8866aa'; }
+  else                              { phase = '🌑 กลางคืน';     phaseColor = '#6688cc'; }
+
+  const timeStr = String(gh).padStart(2,'0') + ':' + String(gm).padStart(2,'0');
+  document.getElementById('gt-display').textContent = timeStr;
+  document.getElementById('gt-display').style.color = phaseColor;
+  document.getElementById('gt-phase').textContent = phase;
+  document.getElementById('gt-phase').style.color = phaseColor;
+  document.getElementById('gt-needle').style.left = pct.toFixed(2) + '%';
+
+  const realStr = String(sgt.getHours()).padStart(2,'0') + ':' +
+                  String(sgt.getMinutes()).padStart(2,'0') + ':' +
+                  String(sgt.getSeconds()).padStart(2,'0') + ' SGT';
+  document.getElementById('gt-real').textContent = realStr;
+  document.getElementById('gt-source').textContent = sourceLabel;
+}
+
+/* ── HOURLY PATTERN DATA (APAC server typical, SGT) ── */
+const typicalHourly = [14,11,8,6,5,5,6,8,14,20,26,30,32,34,33,30,28,32,42,50,54,52,46,30];
+
+/* ── BUILD HOURLY BAR CHART ── */
+function buildBars(live) {
+  const container = document.getElementById('hourly-bars');
+  container.innerHTML = '';
+  const maxVal = 60;
+  const now = new Date();
+  const sgt = new Date(now.toLocaleString('en-US', {timeZone: 'Asia/Singapore'}));
+  const currentHour = sgt.getHours();
+
+  typicalHourly.forEach((v, h) => {
+    const displayVal = (live !== null && h === currentHour) ? live : v;
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    const pct = Math.round((displayVal / maxVal) * 80);
+    const cls = displayVal < 15 ? 'bar-safe' : displayVal < 35 ? 'bar-warn' : 'bar-danger';
+    const active = h === currentHour ? 'outline:1px solid #fff;' : '';
+    col.innerHTML = `
+      <div class="bar-rect ${cls}" data-tip="${h}:00 · ${displayVal} players"
+        style="height:${pct}px; ${active}"></div>
+      <div class="bar-label">${String(h).padStart(2,'0')}</div>
+    `;
+    container.appendChild(col);
+  });
+}
+
+/* ── DRAW CRIME CLOCK CANVAS ── */
+function drawClock(live) {
+  const canvas = document.getElementById('clockCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W/2, cy = H/2, r = 90;
+  ctx.clearRect(0, 0, W, H);
+
+  const now = new Date();
+  const sgt = new Date(now.toLocaleString('en-US', {timeZone: 'Asia/Singapore'}));
+  const currentHour = sgt.getHours();
+
+  /* bg */
+  ctx.beginPath();
+  ctx.arc(cx, cy, r+10, 0, Math.PI*2);
+  ctx.fillStyle = '#0d1117';
+  ctx.fill();
+  ctx.strokeStyle = '#1e2d3d';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  /* hour segments */
+  for (let h = 0; h < 24; h++) {
+    const angle = (h / 24) * Math.PI * 2 - Math.PI / 2;
+    const nextAngle = ((h+1) / 24) * Math.PI * 2 - Math.PI / 2;
+    const val = (live !== null && h === currentHour) ? live : typicalHourly[h];
+    let color = val < 15 ? '#00ff88' : val < 35 ? '#ffaa00' : '#ff4444';
+    const innerR = 42;
+    const outerR = 42 + (val / 60) * 42;
+
+    ctx.beginPath();
+    ctx.moveTo(cx + innerR * Math.cos(angle), cy + innerR * Math.sin(angle));
+    ctx.arc(cx, cy, outerR, angle, nextAngle);
+    ctx.arc(cx, cy, innerR, nextAngle, angle, true);
+    ctx.closePath();
+    ctx.fillStyle = h === currentHour ? '#ffffff' : color + (h === currentHour ? 'ff' : '99');
+    ctx.fill();
+    ctx.strokeStyle = '#080b0f';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+  }
+
+  /* hour labels 0/6/12/18 */
+  [[0, '12'], [6, '06'], [12, '18'], [18, '00']].forEach(([h, label]) => {
+    const angle = (h / 24) * Math.PI * 2 - Math.PI / 2;
+    const lx = cx + (r + 6) * Math.cos(angle);
+    const ly = cy + (r + 6) * Math.sin(angle);
+    ctx.font = '9px "Share Tech Mono"';
+    ctx.fillStyle = '#4a6070';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, lx, ly);
+  });
+
+  /* center text */
+  ctx.font = 'bold 22px "Bebas Neue"';
+  ctx.fillStyle = '#00ff88';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(live !== null ? live : '—', cx, cy - 8);
+  ctx.font = '9px "Share Tech Mono"';
+  ctx.fillStyle = '#4a6070';
+  ctx.fillText('PLAYERS', cx, cy + 10);
+
+  const hStr = String(sgt.getHours()).padStart(2,'0') + ':' + String(sgt.getMinutes()).padStart(2,'0');
+  ctx.font = '10px "Share Tech Mono"';
+  ctx.fillStyle = '#4a6070';
+  ctx.fillText('SGT ' + hStr, cx, cy + 24);
+
+  /* current hour hand */
+  const handAngle = (currentHour / 24) * Math.PI * 2 - Math.PI / 2;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + 78 * Math.cos(handAngle), cy + 78 * Math.sin(handAngle));
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([3, 3]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+/* ── BUILD 7-DAY HISTORY ── */
+function buildHistory() {
+  const container = document.getElementById('hist-chart');
+  container.innerHTML = '';
+  const dayNames = ['จ','อ','พ','พฤ','ศ','ส','อา'];
+  const today = new Date();
+  for (let d = 6; d >= 0; d--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - d);
+    const dow = date.getDay();
+    const isWeekend = dow === 0 || dow === 6;
+    const base = isWeekend ? 43 : 25;
+    const val = Math.round(base + (Math.sin(d * 2.1) * 6));
+    const pct = Math.round((val / 60) * 70);
+    const label = dayNames[dow];
+    const col = document.createElement('div');
+    col.className = 'hist-col';
+    col.innerHTML = `
+      <div class="hist-bar" style="height:${pct}px; background:${isWeekend ? 'rgba(255,68,68,0.3)' : 'rgba(0,255,136,0.2)'}; border-top-color:${isWeekend ? '#ff4444' : '#00ff88'};"></div>
+      <div class="hist-label">${label}</div>
+    `;
+    container.appendChild(col);
+  }
+}
+
+/* ── UPDATE METRIC CARDS ── */
+function updateMetrics(players, max, status, rank) {
+  if (players !== null) {
+    document.getElementById('m-current').textContent = players;
+    document.getElementById('m-max').textContent = '/ ' + max + ' max';
+
+    const pct = Math.round((players / max) * 100);
+    const fill = document.getElementById('cap-fill');
+    fill.style.width = pct + '%';
+    fill.style.background = pct < 30 ? 'var(--accent)' : pct < 65 ? 'var(--accent3)' : 'var(--accent2)';
+    document.getElementById('cap-left').textContent = players + ' / ' + max + ' players online';
+    document.getElementById('cap-pct').textContent = pct + '%';
+
+    const danger = players < 15 ? 'LOW' : players < 35 ? 'MED' : 'HIGH';
+    const dangerSub = players < 15 ? 'ฟาร์มได้ปลอดภัย' : players < 35 ? 'ระวังด้วย' : 'อันตราย! หลีกเลี่ยง';
+    const dangerEl = document.getElementById('m-danger');
+    dangerEl.textContent = danger;
+    dangerEl.className = 'mcard-val ' + (players < 15 ? 'val-green' : players < 35 ? 'val-amber' : 'val-red');
+    document.getElementById('m-danger-sub').textContent = dangerSub;
+  }
+  if (status) {
+    const el = document.getElementById('m-status');
+    el.textContent = status.toUpperCase();
+    el.className = 'mcard-val ' + (status === 'online' ? 'val-green' : 'val-red');
+    el.style.fontSize = '22px';
+    el.style.marginTop = '4px';
+  }
+  if (rank) document.getElementById('m-rank').textContent = 'rank: #' + rank;
+}
+
+/* ── PLAYER TRACKING FOR ALERTS ── */
+let prevPlayers = null;
+let prevZone = null;
+
+function getZone(n) {
+  if (n < 15) return 'SAFE';
+  if (n < 35) return 'CAUTION';
+  return 'DANGER';
+}
+
+/* ── FETCH FROM LOCAL data.json (updated by GitHub Actions every 5 min) ── */
+async function fetchServer() {
+  const statusEl = document.getElementById('fetch-status');
+  statusEl.className = 'fetch-state';
+  statusEl.textContent = '⟳ กำลังโหลดข้อมูลจาก data.json...';
+  try {
+    // เพิ่ม cache-buster เพื่อให้ได้ข้อมูลล่าสุดเสมอ
+    const res = await fetch('data.json?_=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    const attr = json.data.attributes;
+    const players = attr.players;
+    const maxPlayers = attr.maxPlayers;
+    const status = attr.status;
+    const rank = attr.rank;
+
+    /* ── SAVE REAL GAME TIME FROM API ── */
+    const details = attr.details || {};
+    const rawTime = details.time ?? details.serverDayTime ?? details.gametime ?? null;
+    const accel   = details.timeAcceleration ?? details.time_acceleration ?? 1;
+
+    if (rawTime !== null && rawTime !== undefined) {
+      const parsed = parseServerTime(rawTime);
+      if (parsed) {
+        lastKnownGameTime = parsed;
+        lastKnownFetchAt  = new Date();
+        lastKnownAccel    = Number(accel) || 1;
+      }
+    }
+
+    const fetchedAt = json.fetched_at ? new Date(json.fetched_at).toLocaleTimeString('th-TH') : '—';
+    statusEl.className = 'fetch-state ok';
+    statusEl.textContent = `✓ โหลดสำเร็จ — ข้อมูลจาก GitHub Actions: ${fetchedAt} UTC · อัปเดตทุก 5 นาที`;
+    document.getElementById('gt-accel').textContent = lastKnownAccel;
+
+    /* ── DIFF & ALERT ── */
+    if (prevPlayers !== null && players !== prevPlayers) {
+      const diff = players - prevPlayers;
+      const absDiff = Math.abs(diff);
+      if (diff > 0) {
+        playJoinSound();
+        const msg = `+${diff} เข้ามา · ตอนนี้ ${players}/${maxPlayers} คน`;
+        showToast('join', `PLAYER JOIN ▲${diff}`, msg);
+        addLog('join', msg);
+        sendDiscordNotification(`PLAYER JOIN ▲${diff}`, msg);
+      } else {
+        playLeaveSound();
+        const msg = `${diff} ออก · ตอนนี้ ${players}/${maxPlayers} คน`;
+        showToast('leave', `PLAYER LEAVE ▼${absDiff}`, msg);
+        addLog('leave', msg);
+        sendDiscordNotification(`PLAYER LEAVE ▼${absDiff}`, msg);
+      }
+    }
+
+    /* ── ZONE CHANGE ALERT ── */
+    const zone = getZone(players);
+    if (prevZone !== null && zone !== prevZone) {
+      playZoneSound();
+      const zoneMsg = `${prevZone} → ${zone} · ${players} คน`;
+      showToast('zone-change', `ZONE CHANGED`, zoneMsg);
+      addLog('zone', zoneMsg);
+      sendDiscordNotification('ZONE CHANGED', zoneMsg);
+    }
+    prevPlayers = players;
+    prevZone = zone;
+
+    updateMetrics(players, maxPlayers, status, rank);
+    buildBars(players);
+    drawClock(players);
+    document.getElementById('s-time').textContent = 'LAST UPDATE: ' + new Date().toLocaleTimeString('th-TH');
+
+  } catch (e) {
+    statusEl.className = 'fetch-state err';
+    statusEl.textContent = '✗ โหลด data.json ไม่ได้: ' + e.message + ' — ตรวจสอบว่า GitHub Actions รันสำเร็จหรือยัง';
+    buildBars(null);
+    drawClock(null);
+    updateMetrics(null, 60, 'unknown', null);
+  }
+}
+
+/* ── INIT ── */
+buildHistory();
+buildBars(null);
+drawClock(null);
+updateGameTime();
+fetchServer();
+setInterval(fetchServer, 60000);
+setInterval(updateGameTime, 1000);
+setInterval(() => drawClock(prevPlayers), 30000);
+</script>
+</body>
+</html>
