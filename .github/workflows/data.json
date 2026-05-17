@@ -1,0 +1,12 @@
+{
+  "data": {
+    "attributes": {
+      "players": 0,
+      "maxPlayers": 60,
+      "status": "unknown",
+      "rank": null,
+      "details": {}
+    }
+  },
+  "fetched_at": "2026-05-17T00:00:00Z"
+}
