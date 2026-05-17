@@ -1,0 +1,36 @@
+name: Fetch DayZ Server Data
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch BattleMetrics API
+        run: |
+          curl -s \
+            -H "Accept: application/json" \
+            "https://api.battlemetrics.com/servers/4857562" \
+            -o data.json
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          TMP=$(mktemp)
+          jq --arg ts "$TIMESTAMP" '. + {fetched_at: $ts}' data.json > "$TMP"
+          mv "$TMP" data.json
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          git diff --cached --quiet || \
+            git commit -m "chore: update server data $(date -u +'%H:%M UTC')"
+          git push
