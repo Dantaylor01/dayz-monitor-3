@@ -1,0 +1,49 @@
+name: Fetch DayZ Server Data
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  fetch-data:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Fetch BattleMetrics API
+        run: |
+          curl -s "https://api.battlemetrics.com/servers/4857562" \
+            -H "Accept: application/json" \
+            -o server_data.json
+
+      - name: Process and save data.json
+        run: |
+          node -e "
+          const fs = require('fs');
+          const raw = JSON.parse(fs.readFileSync('server_data.json', 'utf8'));
+          const attr = raw.data.attributes;
+          const output = {
+            data: {
+              attributes: {
+                players: attr.players,
+                maxPlayers: attr.maxPlayers,
+                status: attr.status,
+                rank: attr.rank,
+                details: attr.details || {}
+              }
+            },
+            fetched_at: new Date().toISOString()
+          };
+          fs.writeFileSync('data.json', JSON.stringify(output, null, 2));
+          "
+
+      - name: Commit and push
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          git add data.json
+          git diff --quiet --cached || (git commit -m "🔄 Update server data $(date)" && git push)
