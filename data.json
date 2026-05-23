@@ -20,7 +20,7 @@
         "version": "1.29.162510",
         "password": false,
         "official": true,
-        "time": "01:40",
+        "time": "08:19",
         "third_person": true,
         "modded": false,
         "modIds": [],
@@ -29,7 +29,7 @@
       },
       "private": false,
       "createdAt": "2019-11-27T02:33:46.166Z",
-      "updatedAt": "2026-05-23T10:40:45.077Z",
+      "updatedAt": "2026-05-23T11:39:37.666Z",
       "portQuery": 11401,
       "country": "SG",
       "queryStatus": "valid"
@@ -44,5 +44,5 @@
     }
   },
   "included": [],
-  "fetched_at": "2026-05-23T10:44:33Z"
+  "fetched_at": "2026-05-23T11:46:21Z"
 }
