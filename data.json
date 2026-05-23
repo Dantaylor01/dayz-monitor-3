@@ -1,7 +1,7 @@
 {
   "data": {
     "attributes": {
-      "players": 3,
+      "players": 0,
       "maxPlayers": 60,
       "status": "online",
       "rank": 1201,
@@ -9,7 +9,7 @@
         "version": "1.29.162510",
         "password": false,
         "official": true,
-        "time": "22:32",
+        "time": "05:07",
         "third_person": true,
         "modded": false,
         "modIds": [],
@@ -18,5 +18,5 @@
       }
     }
   },
-  "fetched_at": "2026-05-23T17:46:20.347Z"
+  "fetched_at": "2026-05-23T18:46:44.370Z"
 }
