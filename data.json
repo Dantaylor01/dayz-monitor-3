@@ -8,7 +8,7 @@
       "address": null,
       "ip": "128.0.112.57",
       "port": 11400,
-      "players": 1,
+      "players": 2,
       "maxPlayers": 60,
       "rank": 1686,
       "location": [
@@ -20,7 +20,7 @@
         "version": "1.29.163047",
         "password": false,
         "official": true,
-        "time": "17:51",
+        "time": "06:11",
         "third_person": true,
         "modded": false,
         "modIds": [],
@@ -29,7 +29,7 @@
       },
       "private": false,
       "createdAt": "2019-11-27T02:33:46.166Z",
-      "updatedAt": "2026-06-12T22:07:59.096Z",
+      "updatedAt": "2026-06-12T23:36:41.962Z",
       "portQuery": 11401,
       "country": "SG",
       "queryStatus": "valid"
@@ -44,5 +44,5 @@
     }
   },
   "included": [],
-  "fetched_at": "2026-06-12T22:09:44Z"
+  "fetched_at": "2026-06-12T23:45:14Z"
 }
