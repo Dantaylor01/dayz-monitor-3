@@ -1,7 +1,7 @@
 {
   "data": {
     "attributes": {
-      "players": 6,
+      "players": 1,
       "maxPlayers": 60,
       "status": "online",
       "rank": 1314,
@@ -9,14 +9,14 @@
         "version": "1.29.163047",
         "password": false,
         "official": true,
-        "time": "13:50",
+        "time": "09:50",
         "third_person": true,
         "modded": false,
         "modIds": [],
         "modNames": [],
-        "serverSteamId": "90288383203480587"
+        "serverSteamId": "90288401262393355"
       }
     }
   },
-  "fetched_at": "2026-07-09T08:52:50.608Z"
+  "fetched_at": "2026-07-09T11:55:57.039Z"
 }
