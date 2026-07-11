@@ -8,31 +8,31 @@
       "address": null,
       "ip": "128.0.112.57",
       "port": 11400,
-      "players": 0,
+      "players": 4,
       "maxPlayers": 60,
       "rank": 1181,
       "location": [
         103.798,
         1.30154
       ],
-      "status": "offline",
+      "status": "online",
       "details": {
         "version": "1.29.163047",
         "password": false,
         "official": true,
-        "time": "09:57",
+        "time": "16:12",
         "third_person": true,
         "modded": false,
         "modIds": [],
         "modNames": [],
-        "serverSteamId": "90288684297406475"
+        "serverSteamId": "90288700472258571"
       },
       "private": false,
       "createdAt": "2019-11-27T02:33:46.166Z",
-      "updatedAt": "2026-07-11T16:01:07.916Z",
+      "updatedAt": "2026-07-11T17:02:47.035Z",
       "portQuery": 11401,
       "country": "SG",
-      "queryStatus": "timeout"
+      "queryStatus": "valid"
     },
     "relationships": {
       "game": {
@@ -44,5 +44,5 @@
     }
   },
   "included": [],
-  "fetched_at": "2026-07-11T16:03:56Z"
+  "fetched_at": "2026-07-11T17:08:13Z"
 }
