@@ -1,48 +1,22 @@
 {
   "data": {
-    "type": "server",
-    "id": "4857562",
     "attributes": {
-      "id": "4857562",
-      "name": "5486 | ASIA PACIFIC - SG",
-      "address": null,
-      "ip": "128.0.112.57",
-      "port": 11400,
       "players": 1,
       "maxPlayers": 60,
-      "rank": 1181,
-      "location": [
-        103.798,
-        1.30154
-      ],
       "status": "online",
+      "rank": 1181,
       "details": {
         "version": "1.29.163047",
         "password": false,
         "official": true,
-        "time": "11:02",
+        "time": "18:56",
         "third_person": true,
         "modded": false,
         "modIds": [],
         "modNames": [],
-        "serverSteamId": "90288700472258571"
-      },
-      "private": false,
-      "createdAt": "2019-11-27T02:33:46.166Z",
-      "updatedAt": "2026-07-11T23:27:08.329Z",
-      "portQuery": 11401,
-      "country": "SG",
-      "queryStatus": "valid"
-    },
-    "relationships": {
-      "game": {
-        "data": {
-          "type": "game",
-          "id": "dayz"
-        }
+        "serverSteamId": "90288721547713547"
       }
     }
   },
-  "included": [],
-  "fetched_at": "2026-07-11T23:34:16Z"
+  "fetched_at": "2026-07-12T01:05:50.731Z"
 }
