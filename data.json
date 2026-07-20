@@ -1,22 +1,10 @@
 {
-  "data": {
-    "attributes": {
-      "players": 4,
-      "maxPlayers": 60,
-      "status": "online",
-      "rank": 1229,
-      "details": {
-        "version": "1.29.163451",
-        "password": false,
-        "official": true,
-        "time": "10:11",
-        "third_person": true,
-        "modded": false,
-        "modIds": [],
-        "modNames": [],
-        "serverSteamId": "90289312872669195"
-      }
+  "errors": [
+    {
+      "status": "403",
+      "title": "Forbidden",
+      "detail": "Access denied. A subscription is required to use the API."
     }
-  },
-  "fetched_at": "2026-07-20T18:56:56.134Z"
+  ],
+  "fetched_at": "2026-07-20T19:55:10Z"
 }
