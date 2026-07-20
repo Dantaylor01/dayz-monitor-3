@@ -8,7 +8,7 @@
       "address": null,
       "ip": "128.0.112.57",
       "port": 11400,
-      "players": 2,
+      "players": 1,
       "maxPlayers": 60,
       "rank": 1229,
       "location": [
@@ -20,16 +20,17 @@
         "version": "1.29.163451",
         "password": false,
         "official": true,
-        "time": "06:10",
+        "time": "15:16",
         "third_person": true,
         "modded": false,
         "modIds": [],
         "modNames": [],
-        "serverSteamId": "90289298052927499"
+        "lastRestart": "2026-07-20T16:06:27.480Z",
+        "serverSteamId": "90289312872669195"
       },
       "private": false,
       "createdAt": "2019-11-27T02:33:46.166Z",
-      "updatedAt": "2026-07-20T14:23:53.615Z",
+      "updatedAt": "2026-07-20T16:06:27.480Z",
       "portQuery": 11401,
       "country": "SG",
       "queryStatus": "valid"
@@ -44,5 +45,5 @@
     }
   },
   "included": [],
-  "fetched_at": "2026-07-20T14:26:17Z"
+  "fetched_at": "2026-07-20T16:06:45Z"
 }
